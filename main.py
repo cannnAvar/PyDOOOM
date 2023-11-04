@@ -1,13 +1,15 @@
 import pygame
 from pygame import locals
+import player
 
 pygame.init()
 
 window = pygame.display.set_mode([500,500], vsync=1)
 
 
-x = 250
-y = 250
+
+pl = player.Player(100, 100)
+
 
 run = True
 while run:
@@ -23,8 +25,8 @@ while run:
 
     window.fill((250,250,250))
 
-    
-    pygame.draw.circle(window, (100, 0, 255), (x, y), 75)
+    pl.draw(window)
+
     pygame.display.flip()
 
 
