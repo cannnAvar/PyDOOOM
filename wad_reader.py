@@ -1,4 +1,6 @@
 import struct
+from pygame.math import Vector2 as vec2
+
 
 class WadReader:
     def __init__(self, wad_path) -> None:
@@ -6,9 +8,11 @@ class WadReader:
         self.header = self.read_header()
         self.directory = self.read_directory()
 
-        [print("\n", i) for i in self.directory]
-
-        #print("\n", self.header)
+    
+    def read_vertex(self, offset):
+        x = self.read_2_bytes(offset, byte_format="h")
+        y = self.read_2_bytes(offset + 2, byte_format="h")
+        return vec2(x ,y)
 
 
     def read_directory(self):
@@ -31,18 +35,27 @@ class WadReader:
         }
 
 
+    def read_1_bytes(self, offset, byte_format="B"):
+        return self.read_bytes(offset=offset, num_bytes=1, byte_format=byte_format)[0]
+
+    def read_2_bytes(self, offset, byte_format):
+        return self.read_bytes(offset=offset, num_bytes=2, byte_format=byte_format)[0]
+    
     def read_4_bytes(self, offset, byte_format="i"):
         return self.read_bytes(offset=offset, num_bytes=4, byte_format=byte_format)[0]
+
 
     def read_string(self, offset, num_bytes):
         return "".join(b.decode("ascii") for b in
                         self.read_bytes(offset, num_bytes, byte_format="c" * num_bytes)
                         if ord(b) != 0).upper()
 
+
     def read_bytes(self, offset, num_bytes, byte_format):
         self.wad_file.seek(offset)
         buffer = self.wad_file.read(num_bytes)
         return struct.unpack(byte_format, buffer)
+
 
     def close(self):
         self.wad_file.close()
